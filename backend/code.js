@@ -48,6 +48,118 @@ const SYSTEM_SETTINGS = {
 };
 
 // ============================================
+// Web App 進入點
+// ============================================
+// ============================================
+// Web App 進入點
+// ============================================
+
+function doGet(e) {
+  return handleRequest(e);
+}
+
+function doPost(e) {
+  return handleRequest(e);
+}
+
+function handleRequest(e) {
+  const lock = LockService.getScriptLock();
+  // 最多等待 10 秒，避免多人同時寫入衝突
+  lock.tryLock(10000);
+
+  try {
+    // 取得參數 (優先從 postData 取得，若無則從 parameter 取得)
+    let params = e.parameter;
+
+    if (e.postData && e.postData.contents) {
+      try {
+        const postData = JSON.parse(e.postData.contents);
+        // 合併 postData 到 params，優先權給 postData
+        params = { ...params, ...postData };
+      } catch (jsonError) {
+        // 如果內容不是 JSON，可能是一般表單資料，維持原狀
+      }
+    }
+
+    const action = params.action;
+    let result = {};
+
+    // 路由分發
+    switch (action) {
+      case 'authenticateUser':
+        result = authenticateUser(params.identifier, params.password);
+        break;
+      case 'getUnfilledProjectsForTomorrow':
+        result = getUnfilledProjectsForTomorrow(); // 修正8
+        break;
+      case 'getDailySummaryReport': // 修正9
+        result = getDailySummaryReport(params.dateString);
+        break;
+      case 'getAllProjects': // 修正7
+        result = getAllProjects();
+        break;
+      case 'getAllInspectors': // 修正7
+        result = getAllInspectors();
+        break;
+      case 'getDisasterTypes': // 修正1
+        result = getDisasterTypes();
+        break;
+      case 'submitDailyLog': // 修正1
+        result = submitDailyLog(params);
+        break;
+      case 'updateProjectInfo': // 工程管理
+        result = updateProjectInfo(params);
+        break;
+
+      // User Management
+      case 'getAllUsers':
+        result = getAllUsers();
+        break;
+      case 'addUser':
+        result = addUser(params);
+        break;
+      case 'updateUser':
+        result = updateUser(params);
+        break;
+      case 'deleteUser':
+        result = deleteUser(params.rowIndex);
+        break;
+
+      // Holiday & TBM
+      case 'getMonthHolidays':
+        result = getMonthHolidays(params.year, params.month);
+        break;
+      case 'batchSubmitHolidayLogs':
+        result = batchSubmitHolidayLogs(params);
+        break;
+      case 'generateTBMKY':
+        result = generateTBMKY(params);
+        break;
+
+      default:
+        result = { success: false, message: '未知操作: ' + action };
+    }
+
+    // 回傳 JSON 結果，並設定 CORS 標頭
+    return ContentService.createTextOutput(JSON.stringify(result))
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeader('Access-Control-Allow-Origin', '*'); // 允許 github.io 連線
+
+  } catch (error) {
+    const errorResult = {
+      success: false,
+      message: '系統錯誤: ' + error.toString()
+    };
+    return ContentService.createTextOutput(JSON.stringify(errorResult))
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeader('Access-Control-Allow-Origin', '*');
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// ============================================
+
 // ⚙️ 配置設定
 // ============================================
 const CONFIG = {
