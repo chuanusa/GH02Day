@@ -13,6 +13,9 @@ declare global {
     }
 }
 
+// Google OAuth Client ID (public, safe to hardcode in frontend)
+const GOOGLE_CLIENT_ID = '62340397596-cd3pfo4me39v4rgmq96iaknter75lga9.apps.googleusercontent.com';
+
 export const Login: React.FC<LoginProps> = ({ onLogin }) => {
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
@@ -20,7 +23,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '62340397596-cd3pfo4me39v4rgmq96iaknter75lga9.apps.googleusercontent.com';
+        const clientId = GOOGLE_CLIENT_ID;
 
         const handleCredentialResponse = async (response: any) => {
             setLoading(true);
