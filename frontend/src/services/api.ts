@@ -3,10 +3,13 @@ const GAS_URL = import.meta.env.VITE_API_URL || '';
 import type { ApiResponse, LoginResponse, User, CalendarData, TBMKYParams } from '../types';
 
 export const api = {
-    get: async <T>(action: string, params: Record<string, string> = {}): Promise<ApiResponse<T>> => {
+    get: async <T>(action: string, params: Record<string, any> = {}): Promise<ApiResponse<T>> => {
         try {
-            const query = new URLSearchParams({ action, ...params }).toString();
-            const response = await fetch(`${GAS_URL}?${query}`);
+            const response = await fetch(GAS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action, ...params }),
+            });
             return await response.json();
         } catch (error) {
             return { success: false, message: error instanceof Error ? error.message : 'Unknown error' };
