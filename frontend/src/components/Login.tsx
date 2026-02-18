@@ -20,9 +20,10 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        // Define callback function
+        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+        if (!clientId) return;
+
         const handleCredentialResponse = async (response: any) => {
-            console.log("Google Credential Response:", response);
             setLoading(true);
             setError('');
             try {
@@ -39,19 +40,25 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
             }
         };
 
-        // Initialize Google Sign-In
-        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-        if (window.google && clientId) {
-            window.google.accounts.id.initialize({
-                client_id: clientId,
-                callback: handleCredentialResponse
-            });
-            window.google.accounts.id.renderButton(
-                document.getElementById("googleSignInDiv"),
-                { theme: "outline", size: "large", width: "100%", text: "sign_in_with", locale: "zh_TW" }
-            );
-        }
+        // Poll until window.google is ready (GIS script is async defer)
+        const initGoogle = () => {
+            if (window.google?.accounts?.id) {
+                window.google.accounts.id.initialize({
+                    client_id: clientId,
+                    callback: handleCredentialResponse,
+                });
+                window.google.accounts.id.renderButton(
+                    document.getElementById('googleSignInDiv'),
+                    { theme: 'outline', size: 'large', width: '100%', text: 'sign_in_with', locale: 'zh_TW' }
+                );
+            } else {
+                setTimeout(initGoogle, 100);
+            }
+        };
+
+        initGoogle();
     }, [onLogin]);
+
 
 
     const handleSubmit = async (e: React.FormEvent) => {
