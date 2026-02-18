@@ -86,11 +86,6 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 {/* Google Login Section */}
                 <div className="mb-6">
                     <div id="googleSignInDiv" className="w-full h-10 flex justify-center"></div>
-                    {!import.meta.env.VITE_GOOGLE_CLIENT_ID && (
-                        <p className="text-xs text-center text-gray-500 mt-2">
-                            (需設定 VITE_GOOGLE_CLIENT_ID 以啟用 Google 登入)
-                        </p>
-                    )}
                 </div>
 
                 <div className="relative flex py-5 items-center">

@@ -29,6 +29,7 @@ jobs:
         env:
           # 使用 Repository Variable (建議) 或 Secret
           VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
         run: npm run build
 
       - name: Deploy to GitHub Pages
