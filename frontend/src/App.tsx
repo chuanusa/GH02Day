@@ -47,28 +47,28 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white shadow">
+      <header className="bg-blue-700 shadow">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-6 overflow-x-auto w-full md:w-auto">
-            <h1 className="text-3xl font-bold text-gray-900 cursor-pointer flex-shrink-0" onClick={() => setCurrentView('dashboard')}>
+            <h1 className="text-3xl font-bold text-white cursor-pointer flex-shrink-0" onClick={() => setCurrentView('dashboard')}>
               工程日誌系統
             </h1>
             <nav className="flex space-x-2">
               <button
                 onClick={() => setCurrentView('dashboard')}
-                className={`px - 3 py - 2 rounded - md text - sm font - medium whitespace - nowrap ${currentView === 'dashboard' ? 'bg-gray-900 text-white' : 'text-gray-900 hover:bg-gray-200'} `}
+                className={`px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap ${currentView === 'dashboard' ? 'bg-white text-blue-700' : 'text-blue-100 hover:bg-blue-600'} `}
               >
                 儀表板
               </button>
               <button
                 onClick={() => setCurrentView('dailyLog')}
-                className={`px - 3 py - 2 rounded - md text - sm font - medium whitespace - nowrap ${currentView === 'dailyLog' ? 'bg-gray-900 text-white' : 'text-gray-900 hover:bg-gray-200'} `}
+                className={`px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap ${currentView === 'dailyLog' ? 'bg-white text-blue-700' : 'text-blue-100 hover:bg-blue-600'} `}
               >
                 填寫日誌
               </button>
               <button
                 onClick={() => setCurrentView('projects')}
-                className={`px - 3 py - 2 rounded - md text - sm font - medium whitespace - nowrap ${currentView === 'projects' ? 'bg-gray-900 text-white' : 'text-gray-900 hover:bg-gray-200'} `}
+                className={`px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap ${currentView === 'projects' ? 'bg-white text-blue-700' : 'text-blue-100 hover:bg-blue-600'} `}
               >
                 工程管理
               </button>
@@ -76,13 +76,13 @@ function App() {
                 <>
                   <button
                     onClick={() => setCurrentView('users')}
-                    className={`px - 3 py - 2 rounded - md text - sm font - medium whitespace - nowrap ${currentView === 'users' ? 'bg-gray-900 text-white' : 'text-gray-900 hover:bg-gray-200'} `}
+                    className={`px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap ${currentView === 'users' ? 'bg-white text-blue-700' : 'text-blue-100 hover:bg-blue-600'} `}
                   >
                     使用者
                   </button>
                   <button
                     onClick={() => setCurrentView('holidays')}
-                    className={`px - 3 py - 2 rounded - md text - sm font - medium whitespace - nowrap ${currentView === 'holidays' ? 'bg-gray-900 text-white' : 'text-gray-900 hover:bg-gray-200'} `}
+                    className={`px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap ${currentView === 'holidays' ? 'bg-white text-blue-700' : 'text-blue-100 hover:bg-blue-600'} `}
                   >
                     假日/TBM
                   </button>
@@ -91,10 +91,10 @@ function App() {
             </nav>
           </div>
           <div className="flex items-center gap-4 flex-shrink-0">
-            <span className="text-gray-600 hidden md:inline">歡迎, {user.name}</span>
+            <span className="text-blue-100 hidden md:inline">歡迎, {user.name}</span>
             <button
               onClick={handleLogout}
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded whitespace-nowrap"
+              className="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded whitespace-nowrap transition-colors"
             >
               登出
             </button>

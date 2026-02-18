@@ -1498,6 +1498,64 @@ function getLastInspectors(projectSeqNo, logDate) {
 }
 
 // ============================================
+
+function getUnfilledProjectsForTomorrow() {
+  try {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = Utilities.formatDate(tomorrow, 'GMT+8', 'yyyy-MM-dd');
+
+    const projectSheet = getSheet(CONFIG.SHEET_NAMES.PROJECT_INFO);
+    const projectData = projectSheet.getDataRange().getValues();
+    const projectCols = CONFIG.PROJECT_COLS;
+
+    const logSheet = getSheet(CONFIG.SHEET_NAMES.DAILY_LOG_DB);
+    const logData = logSheet.getDataRange().getValues();
+    const logCols = CONFIG.DAILY_LOG_COLS;
+
+    // Get filled projects for tomorrow
+    const filledProjectSeqNos = new Set();
+    for (let i = 1; i < logData.length; i++) {
+      if (!logData[i][logCols.DATE]) continue;
+      const logDateStr = Utilities.formatDate(new Date(logData[i][logCols.DATE]), 'GMT+8', 'yyyy-MM-dd');
+      if (logDateStr === tomorrowStr) {
+        const seqNo = logData[i][logCols.PROJECT_SEQ_NO] ? logData[i][logCols.PROJECT_SEQ_NO].toString() : '';
+        if (seqNo) filledProjectSeqNos.add(seqNo);
+      }
+    }
+
+    const unfilledProjects = [];
+    for (let i = 1; i < projectData.length; i++) {
+      const status = projectData[i][projectCols.PROJECT_STATUS];
+      if (status !== '施工中') continue;
+
+      const seqNo = projectData[i][projectCols.SEQ_NO] ? projectData[i][projectCols.SEQ_NO].toString() : '';
+      if (!seqNo) continue;
+
+      if (!filledProjectSeqNos.has(seqNo)) {
+        unfilledProjects.push({
+          projectSeqNo: seqNo,
+          projectName: projectData[i][projectCols.FULL_NAME] || '',
+          contractor: projectData[i][projectCols.CONTRACTOR] || ''
+        });
+      }
+    }
+
+    return {
+      success: true,
+      data: unfilledProjects
+    };
+
+  } catch (error) {
+    Logger.log('getUnfilledProjectsForTomorrow error: ' + error.toString());
+    return {
+      success: false,
+      message: '無法取得未填寫工程列表: ' + error.message
+    };
+  }
+}
+
+// ============================================
 // 日誌填報功能
 // ============================================
 function loadLogSetupData() {
