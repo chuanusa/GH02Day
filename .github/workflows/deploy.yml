@@ -35,9 +35,6 @@ jobs:
 
       - name: Build
         working-directory: ./frontend
-        env:
-          VITE_API_URL: ${{ vars.VITE_API_URL }}
-          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
         run: npm run build
 
       - name: Upload Pages Artifact
