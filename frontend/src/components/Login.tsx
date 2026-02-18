@@ -51,7 +51,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 });
                 window.google.accounts.id.renderButton(
                     document.getElementById('googleSignInDiv'),
-                    { theme: 'outline', size: 'large', width: '100%', text: 'sign_in_with', locale: 'zh_TW' }
+                    { theme: 'outline', size: 'large', width: 300, text: 'sign_in_with', locale: 'zh_TW' }
                 );
             } else {
                 setTimeout(initGoogle, 100);
@@ -111,6 +111,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
                         <input
                             id="identifier"
                             type="text"
+                            autoComplete="username"
                             value={identifier}
                             onChange={(e) => setIdentifier(e.target.value)}
                             className="shadow-sm appearance-none border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -124,6 +125,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
                         <input
                             id="password"
                             type="password"
+                            autoComplete="current-password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="shadow-sm appearance-none border border-gray-300 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
