@@ -420,7 +420,7 @@ function initializeSheet(sheet, name) {
     case CONFIG.SHEET_NAMES.PROJECT_INFO:
       sheet.appendRow(['序號', '簡稱', '全名', '承攬商', '主要部門', '工作地址', 'GPS座標',
         '工地負責人', '職安人員', '工地主任', '負責人電話', '職安電話', '主任電話',
-        '預設檢驗員ID', '工程狀態', '備註']);
+        '預設檢驗員ID', '工程狀態', '備註', '職安證照']);
       break;
     case CONFIG.SHEET_NAMES.DAILY_LOG_DB:
       sheet.appendRow(['日期', '工程序號', '工程簡稱', '檢驗員ID', '施工人數',
@@ -431,7 +431,7 @@ function initializeSheet(sheet, name) {
       sheet.appendRow(['部門', '姓名', '職稱', '專業', '電話', 'ID編號', '狀態']);
       break;
     case CONFIG.SHEET_NAMES.FILLERS:
-      sheet.appendRow(['部門', '姓名', '信箱', '角色', '密碼', '管理工程', '主管信箱']);
+      sheet.appendRow(['部門', '姓名', '帳號', '信箱', '角色', '密碼', '管理工程序號', '主管信箱', '權限設定']);
       break;
     case CONFIG.SHEET_NAMES.MODIFICATION_LOG:
       sheet.appendRow(['時間戳記', '使用者', '工程序號', '日誌日期', '原始資料', '新資料', '原因', '類型']);
