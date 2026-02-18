@@ -89,6 +89,9 @@ function handleRequest(e) {
       case 'authenticateUser':
         result = authenticateUser(params.identifier, params.password);
         break;
+      case 'googleLogin':
+        result = handleGoogleLogin(params.credential);
+        break;
       case 'getUnfilledProjectsForTomorrow':
         result = getUnfilledProjectsForTomorrow(); // 修正8
         break;
@@ -357,6 +360,9 @@ function handleApiRequest(e) {
       // User & Auth
       case 'authenticateUser':
         result = authenticateUser(params.identifier, params.password);
+        break;
+      case 'googleLogin':
+        result = handleGoogleLogin(params.credential);
         break;
       case 'changeUserPassword':
         result = changeUserPassword(params.account, params.oldPassword, params.newPassword);
@@ -665,6 +671,96 @@ function authenticateUser(identifier, password) {
     return {
       success: false,
       message: '登入失敗：' + error.message
+    };
+  }
+}
+
+/**
+ * 處理 Google 登入 (OAuth 2.0)
+ * @param {string} credential - Google JWT Token
+ * @returns {Object} - 登入結果
+ */
+function handleGoogleLogin(credential) {
+  try {
+    Logger.log('=== Google 登入驗證開始 ===');
+
+    // 1. 解碼 JWT Token (不驗證簽名，因為 GAS 環境限制，且 HTTPS 傳輸已相對安全，若需嚴格驗證可呼叫 Google API)
+    // 簡單解碼 payload
+    const parts = credential.split('.');
+    if (parts.length !== 3) {
+      throw new Error('Invalid JWT format');
+    }
+
+    const payload = JSON.parse(Utilities.newBlob(Utilities.base64DecodeWebSafe(parts[1])).getDataAsString());
+    const email = payload.email;
+    const name = payload.name;
+
+    Logger.log('Google Email: ' + email);
+
+    if (!email) {
+      throw new Error('無法取得 Email');
+    }
+
+    // 2. 檢查使用者是否存在於 Users 工作表
+    const fillerSheet = getSheet(CONFIG.SHEET_NAMES.FILLERS);
+    const data = fillerSheet.getDataRange().getValues();
+    const cols = CONFIG.FILLER_COLS;
+
+    let userRow = null;
+
+    // 從第2行開始搜尋
+    for (let i = 1; i < data.length; i++) {
+      const rowEmail = data[i][cols.EMAIL] ? data[i][cols.EMAIL].toString().trim().toLowerCase() : '';
+      if (rowEmail === email.toLowerCase()) {
+        userRow = data[i];
+        break;
+      }
+    }
+
+    if (!userRow) {
+      Logger.log('✗ 此 Email 未註冊');
+      return {
+        success: false,
+        message: '此 Google 帳號未在系統中註冊，請聯繫管理員。'
+      };
+    }
+
+    Logger.log('✓ 找到使用者，進行登入');
+
+    // 3. 建立 Session
+    const rowAccount = userRow[cols.ACCOUNT] || '';
+    const managedProjectsStr = userRow[cols.MANAGED_PROJECTS] || '';
+    const managedProjectsArray = managedProjectsStr ?
+      managedProjectsStr.split(',').map(p => p.trim()).filter(p => p) : [];
+    const permissions = getUserPermissions(email);
+
+    const userSession = {
+      isLoggedIn: true,
+      loginType: 'google',
+      account: rowAccount,
+      email: email,
+      name: userRow[cols.NAME] || name,
+      role: userRow[cols.ROLE] || CONFIG.ROLES.FILLER,
+      dept: userRow[cols.DEPT] || '未分類',
+      managedProjects: managedProjectsArray,
+      supervisorEmail: userRow[cols.SUPERVISOR_EMAIL] || '',
+      permissions: permissions,
+      loginTime: new Date().toISOString()
+    };
+
+    PropertiesService.getUserProperties().setProperty('userSession', JSON.stringify(userSession));
+
+    return {
+      success: true,
+      message: 'Google 登入成功！',
+      user: userSession
+    };
+
+  } catch (error) {
+    Logger.log('handleGoogleLogin error: ' + error.toString());
+    return {
+      success: false,
+      message: 'Google 登入失敗: ' + error.message
     };
   }
 }

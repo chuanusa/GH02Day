@@ -33,6 +33,25 @@ export const api = {
             };
         }
     },
+    googleLogin: async (credential: string): Promise<LoginResponse> => {
+        try {
+            const response = await fetch(GAS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'googleLogin', credential }),
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Google Login failed:', error);
+            return {
+                success: false,
+                message: 'Google 登入連線失敗'
+            };
+        }
+    },
     getUnfilledProjectsForTomorrow: async () => {
         return api.get<any>('getUnfilledProjectsForTomorrow');
     },
