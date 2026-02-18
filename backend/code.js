@@ -396,8 +396,17 @@ function handleApiRequest(e) {
   }
 }
 
+const SPREADSHEET_ID = '1fVVZ_-XCuhxrDcw-vQgNepXgecu9tBYU3rxaZy3Vk8s';
+
 function getSheet(name) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let ss;
+  try {
+    ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  } catch (e) {
+    console.error('Failed to open spreadsheet by ID, falling back to active spreadsheet', e);
+    ss = SpreadsheetApp.getActiveSpreadsheet();
+  }
+
   let sheet = ss.getSheetByName(name);
   if (!sheet) {
     sheet = ss.insertSheet(name);
