@@ -20,8 +20,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-        if (!clientId) return;
+        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '62340397596-cd3pfo4me39v4rgmq96iaknter75lga9.apps.googleusercontent.com';
 
         const handleCredentialResponse = async (response: any) => {
             setLoading(true);
